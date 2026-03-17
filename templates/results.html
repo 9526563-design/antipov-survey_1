@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block extra_style %}
+<style>
+.result-block { background:white; border-radius:14px; padding:24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.07); }
+.result-block h3 { font-size:1.1em; color:#1F4E79; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.scale-row { margin-bottom:14px; }
+.scale-name { font-size:0.88em; font-weight:600; color:#333; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
+.scale-badge { font-size:0.78em; padding:2px 10px; border-radius:12px; font-weight:700; color:white; }
+.scale-bar-wrap { background:#f0f0f0; border-radius:8px; height:10px; margin-bottom:6px; }
+.scale-bar { height:10px; border-radius:8px; transition:width 0.6s; }
+.scale-desc { font-size:0.83em; color:#555; line-height:1.5; }
+.rec-box { background:#f8fbff; border-left:4px solid #1F4E79; border-radius:6px; padding:12px 16px; margin-top:16px; }
+.rec-box p { font-size:0.88em; color:#333; line-height:1.6; margin:0 0 6px; }
+.rec-box p:last-child { margin:0; }
+.rec-box p::before { content:'→ '; color:#1F4E79; font-weight:700; }
+.subtitle-tag { font-size:0.82em; color:#888; font-weight:400; margin-left:6px; }
+.hero { background:linear-gradient(135deg,#1F4E79,#2e86de); border-radius:16px; padding:28px 24px; color:white; margin-bottom:24px; text-align:center; }
+.hero h1 { font-size:1.5em; margin-bottom:8px; }
+.hero p { opacity:0.85; font-size:0.95em; line-height:1.6; margin:0; }
+.contact-block { background:#f0f7ff; border:2px solid #1F4E79; border-radius:14px; padding:24px; text-align:center; margin-top:24px; }
+.contact-block h3 { color:#1F4E79; margin-bottom:8px; }
+.contact-block p { color:#555; font-size:0.92em; line-height:1.6; margin-bottom:0; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="hero">
+  <div style="font-size:2.5em; margin-bottom:10px;">🎉</div>
+  <h1>Ваш психологический профиль</h1>
+  <p>{% if name and name != 'Не указано' %}{{ name }}, вы прошли все методики.{% else %}Вы прошли все методики.{% endif %} Ниже — ваши результаты с описанием черт личности и персональными рекомендациями.</p>
+</div>
+
+{% for block in results %}
+<div class="result-block">
+  <h3>
+    <span>{{ block.icon }}</span>
+    {{ block.title }}
+    {% if block.subtitle is defined and block.subtitle %}
+      <span class="subtitle-tag">— {{ block.subtitle }}</span>
+    {% endif %}
+  </h3>
+
+  {% for scale in block.scales %}
+  <div class="scale-row">
+    <div class="scale-name">
+      <span>{{ scale.name }}</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:0.82em; color:#888;">{{ scale.val }}</span>
+        {% if scale.level %}
+        <span class="scale-badge" style="background:{{ scale.color }};">{{ scale.level }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="scale-bar-wrap">
+      <div class="scale-bar" style="width:{{ scale.pct }}%; background:{{ scale.color }};"></div>
+    </div>
+    {% if scale.desc %}
+    <div class="scale-desc">{{ scale.desc }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {% if block.recommendations %}
+  <div class="rec-box">
+    {% for rec in block.recommendations %}
+    <p>{{ rec }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
+<!-- Блок с призывом связаться -->
+<div class="contact-block">
+  <div style="font-size:2em; margin-bottom:10px;">🔍</div>
+  <h3>Хотите разобраться подробнее?</h3>
+  <p>
+    Эти результаты — лишь общий контур вашего психологического профиля. За каждой шкалой стоит гораздо больше нюансов.
+    Если вы хотите получить детальную интерпретацию, узнать как ваши черты проявляются в профессиональной деятельности
+    и получить индивидуальные рекомендации по развитию — обратитесь к исследователю за консультацией.
+  </p>
+  <div style="margin-top:16px;">
+    <a href="/" class="btn btn-primary">На главную</a>
+  </div>
+</div>
+
+{% endblock %}

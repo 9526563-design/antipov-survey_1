@@ -23,7 +23,11 @@
     {% for field in fields %}
     <div class="field-group">
       <div class="field-label">{{ loop.index }}. {{ field.label }} *</div>
-      {% if field.type == 'radio' %}
+      {% if field.type == 'text' %}
+        <input type="text" name="{{ field.id }}"
+               style="width:100%; max-width:400px; padding:10px 14px; border:1.5px solid #ddd; border-radius:8px; font-size:1em;"
+               required placeholder="Введите имя и фамилию">
+      {% elif field.type == 'radio' %}
         {% for opt in field.options %}
         <label class="radio-option">
           <input type="radio" name="{{ field.id }}" value="{{ opt }}" required>

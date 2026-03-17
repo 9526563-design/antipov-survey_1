@@ -1,4 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, Response
+from interpretations import interpret_results
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import json, io, os, threading, uuid, random, string
 from datetime import datetime
 import openpyxl
@@ -118,6 +122,72 @@ def load_session_by_code(code):
 # Пароль для админки — задаётся через переменную окружения ADMIN_PASSWORD
 # На Render: Settings → Environment Variables → ADMIN_PASSWORD = ваш_пароль
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin2026')
+
+# ============================================================
+# EMAIL УВЕДОМЛЕНИЯ
+# ============================================================
+EMAIL_FROM    = os.environ.get('EMAIL_FROM', '9526563@gmail.com')
+EMAIL_TO      = os.environ.get('EMAIL_TO', 'f-heads@mail.ru')
+EMAIL_PASS    = os.environ.get('EMAIL_PASS', 'ziduyeuhuwgjnwjh')
+
+def send_notification(name, group, scales, interpreted):
+    """Отправляет email с профилем респондента"""
+    try:
+        group_label = 'Предприниматель' if group == 'entrepreneur' else 'Наёмный работник'
+        subject = f'Новое прохождение: {name} ({group_label})'
+
+        # Формируем HTML письмо
+        html = f'''
+        <html><body style="font-family:Arial,sans-serif; max-width:700px; margin:0 auto;">
+        <h2 style="color:#1F4E79;">Новое прохождение опросника</h2>
+        <table style="border-collapse:collapse; margin-bottom:20px;">
+          <tr><td style="padding:6px 12px; font-weight:bold; color:#555;">Имя:</td>
+              <td style="padding:6px 12px;">{name}</td></tr>
+          <tr><td style="padding:6px 12px; font-weight:bold; color:#555;">Группа:</td>
+              <td style="padding:6px 12px;">{group_label}</td></tr>
+          <tr><td style="padding:6px 12px; font-weight:bold; color:#555;">Дата:</td>
+              <td style="padding:6px 12px;">{datetime.now().strftime("%d.%m.%Y %H:%M")}</td></tr>
+        </table>
+        <hr style="border:1px solid #eee; margin:20px 0;">
+        '''
+
+        for block in interpreted:
+            html += f'<h3 style="color:#1F4E79;">{block["icon"]} {block["title"]}</h3>'
+            if block.get('subtitle'):
+                html += f'<p style="color:#888; font-size:0.9em;">{block["subtitle"]}</p>'
+            for sc in block['scales']:
+                bar_color = sc['color']
+                html += f'''
+                <div style="margin-bottom:12px;">
+                  <div style="display:flex; justify-content:space-between;">
+                    <strong>{sc["name"]}</strong>
+                    <span style="color:{bar_color}; font-weight:bold;">{sc.get("level","")} ({sc["val"]})</span>
+                  </div>
+                  <div style="background:#f0f0f0; border-radius:4px; height:8px; margin:4px 0;">
+                    <div style="background:{bar_color}; width:{sc["pct"]}%; height:8px; border-radius:4px;"></div>
+                  </div>
+                  <div style="font-size:0.85em; color:#555;">{sc.get("desc","")}</div>
+                </div>'''
+            if block.get('recommendations'):
+                html += '<div style="background:#f8fbff; border-left:4px solid #1F4E79; padding:10px 14px; margin:10px 0;">'
+                for rec in block['recommendations']:
+                    html += f'<p style="margin:4px 0; font-size:0.88em;">→ {rec}</p>'
+                html += '</div>'
+            html += '<hr style="border:1px solid #eee; margin:16px 0;">'
+
+        html += '</body></html>'
+
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From']    = EMAIL_FROM
+        msg['To']      = EMAIL_TO
+        msg.attach(MIMEText(html, 'html', 'utf-8'))
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(EMAIL_FROM, EMAIL_PASS)
+            server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
+    except Exception as e:
+        print(f'Email error: {e}')  # не ломаем приложение если email не ушёл
 
 # ============================================================
 # ХРАНИЛИЩЕ ДАННЫХ (in-memory + JSON-файл на диске)
@@ -630,6 +700,7 @@ METHODS = {
 
 # Социально-демографический блок
 SOCDEM_ENTREPRENEUR = [
+    {'id':'sd_name','label':'Ваше имя и фамилия','type':'text'},
     {'id':'sd_gender','label':'Ваш пол','type':'radio','options':['Мужской','Женский','Предпочитаю не указывать']},
     {'id':'sd_age','label':'Ваш возраст (полных лет)','type':'number','min':18,'max':80},
     {'id':'sd_city','label':'Численность населения вашего города','type':'radio',
@@ -662,7 +733,8 @@ SOCDEM_ENTREPRENEUR = [
 ]
 
 SOCDEM_EMPLOYEE = [
-    {'id':'sd_gender','label':'Ваш пол','type':'radio','options':['Мужской','Женский','Предпочитаю не указывать']},
+    {'id':'sd_name','label':'Ваше имя и фамилия','type':'text'},
+    {'id':'sd_gender','label':'Ваш пол','type':'radio','options':['Мужской','Женский','Женский','Предпочитаю не указывать']},
     {'id':'sd_age','label':'Ваш возраст (полных лет)','type':'number','min':18,'max':80},
     {'id':'sd_city','label':'Численность населения вашего города','type':'radio',
      'options':['Более 1 млн человек','От 500 тыс. до 1 млн человек','От 100 до 500 тыс. человек','Менее 100 тыс. человек'],
@@ -747,9 +819,12 @@ def survey_step(step):
 
         if next_step == 'done':
             save_response(group, answers)
+            # Сохраняем answers в сессии для страницы результатов
+            result_sid = str(uuid.uuid4())
+            set_survey_session(result_sid, {'answers': answers, 'group': group, 'type': 'results'})
+            session['result_sid'] = result_sid
             clear_survey_session(sid)
-            session.clear()
-            return redirect(url_for('done'))
+            return redirect(url_for('results'))
         # После каждой методики показываем экран с кодом и кнопкой "продолжить"
         resume_code = sdata.get('resume_code', '')
         return redirect(url_for('step_complete', step=step, next_step=next_step))
@@ -820,6 +895,27 @@ def pause():
     resume_code = sdata.get('resume_code', '')
     save_session_to_disk(sid, sdata)
     return render_template('pause.html', resume_code=resume_code)
+
+@app.route('/results')
+def results():
+    result_sid = session.get('result_sid')
+    if not result_sid:
+        return redirect(url_for('index'))
+    rdata = get_survey_session(result_sid)
+    if not rdata:
+        return redirect(url_for('index'))
+    answers = rdata.get('answers', {})
+    group = rdata.get('group', 'entrepreneur')
+    from app import compute_scales
+    scales = compute_scales(answers, group)
+    interpreted = interpret_results(scales)
+    name = answers.get('sd_name', 'Не указано')
+    session.pop('result_sid', None)
+    clear_survey_session(result_sid)
+    # Отправляем email в фоне чтобы не задерживать страницу
+    import threading
+    threading.Thread(target=send_notification, args=(name, group, scales, interpreted), daemon=True).start()
+    return render_template('results.html', results=interpreted, scales=scales, name=name)
 
 @app.route('/done')
 def done():

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align:center; padding: 40px 0 20px;">
+  <h1 style="font-size:1.8em; margin-bottom:8px;">Психологическое исследование</h1>
+  <p style="color:#666; font-size:1em; margin-bottom:4px;">Предикторы профессионального выбора</p>
+  <p style="color:#999; font-size:0.85em;">ОмГА · Специальность 5.3.1 · Антипов Е.А.</p>
+</div>
+
+<div class="card">
+  <h2>Об исследовании</h2>
+  <p style="line-height:1.7; color:#444; margin-bottom:16px;">
+    Данное исследование посвящено изучению психологических характеристик предпринимателей и наёмных работников.
+    Вам будет предложено пройти 10 психологических методик. Прохождение занимает <strong>40–60 минут</strong>.
+    Все ответы <strong>анонимны</strong> и используются исключительно в научных целях.
+  </p>
+
+  <div style="background:#f8f9fa; border-radius:10px; padding:18px 20px; margin-bottom:20px;">
+    <p style="font-weight:700; color:#1F4E79; margin-bottom:12px;">📋 Как проходить опрос:</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <span style="background:#1F4E79; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.8em; font-weight:700; flex-shrink:0; margin-top:1px;">1</span>
+        <p style="color:#444; line-height:1.5; margin:0;">Выберите свою категорию ниже и отвечайте на вопросы последовательно. Правильных и неправильных ответов нет — отвечайте так, как есть на самом деле.</p>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <span style="background:#1F4E79; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.8em; font-weight:700; flex-shrink:0; margin-top:1px;">2</span>
+        <p style="color:#444; line-height:1.5; margin:0;">Если нужно прерваться — нажмите кнопку <strong>«⏸ Сделать паузу»</strong> на любой странице. Вы получите личный код из 8 символов (например: <code style="background:#e8f0fe; padding:2px 6px; border-radius:4px; font-size:0.95em;">VQFW-7F23</code>).</p>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <span style="background:#1F4E79; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.8em; font-weight:700; flex-shrink:0; margin-top:1px;">3</span>
+        <p style="color:#444; line-height:1.5; margin:0;">Чтобы продолжить с того же места — нажмите <strong>«🔑 Продолжить по коду»</strong> на этой странице и введите свой код. Все предыдущие ответы сохранятся.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-warning">
+    ⚠️ Сохраните код если делаете паузу — без него продолжить прохождение будет невозможно.
+  </div>
+
+  <p style="font-weight:600; margin-bottom:16px; color:#2c3e50;">Выберите, кем вы являетесь:</p>
+  <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
+    <a href="/start/entrepreneur" class="btn btn-primary" style="min-width:220px; padding:18px 30px; font-size:1.05em;">
+      🏢 Я предприниматель<br><span style="font-size:0.78em; font-weight:400; opacity:0.85;">Владелец действующего бизнеса</span>
+    </a>
+    <a href="/start/employee" class="btn btn-success" style="min-width:220px; padding:18px 30px; font-size:1.05em;">
+      👔 Я наёмный работник<br><span style="font-size:0.78em; font-weight:400; opacity:0.85;">Работаю в организации по договору</span>
+    </a>
+  </div>
+  <div style="border-top:1px solid #eee; padding-top:20px; text-align:center;">
+    <p style="color:#888; font-size:0.88em; margin-bottom:10px;">Уже начали прохождение и получили код?</p>
+    <a href="/resume" class="btn btn-outline" style="padding:10px 28px;">
+      🔑 Продолжить по коду
+    </a>
+  </div>
+</div>
+
+<div style="text-align:center; color:#aaa; font-size:0.8em; padding:20px 0;">
+  Исследование выполнено в соответствии с этическими стандартами научных исследований. Данные не передаются третьим лицам.
+</div>
+{% endblock %}

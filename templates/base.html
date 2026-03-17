@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Психологическое исследование</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; min-height: 100vh; }
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+.card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+h1 { font-size: 1.6em; color: #1F4E79; margin-bottom: 8px; }
+h2 { font-size: 1.25em; color: #1F4E79; margin-bottom: 16px; }
+h3 { font-size: 1.05em; color: #2c3e50; margin: 20px 0 10px; }
+.subtitle { color: #666; font-size: 0.9em; margin-bottom: 4px; }
+.instruction-box { background: #EBF3FB; border-left: 4px solid #1F4E79; padding: 14px 18px; border-radius: 6px; margin: 16px 0; font-size: 0.92em; line-height: 1.6; color: #2c3e50; }
+.progress-bar-wrap { background: #e0e0e0; border-radius: 20px; height: 10px; margin: 16px 0; }
+.progress-bar { background: linear-gradient(90deg, #1F4E79, #2e86de); height: 10px; border-radius: 20px; transition: width 0.4s; }
+.progress-label { font-size: 0.82em; color: #666; text-align: right; margin-top: 4px; }
+.btn { display: inline-block; padding: 12px 32px; border-radius: 8px; border: none; font-size: 1em; cursor: pointer; text-decoration: none; transition: all 0.2s; font-weight: 600; }
+.btn-primary { background: #1F4E79; color: white; }
+.btn-primary:hover { background: #163d5e; transform: translateY(-1px); }
+.btn-success { background: #375623; color: white; }
+.btn-success:hover { background: #2a421b; }
+.btn-danger { background: #c0392b; color: white; font-size: 0.85em; padding: 6px 14px; }
+.btn-outline { background: white; color: #1F4E79; border: 2px solid #1F4E79; }
+.btn-wrap { text-align: center; margin-top: 30px; }
+.required-note { font-size: 0.8em; color: #e74c3c; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.88em; margin-bottom: 20px; }
+th { background: #1F4E79; color: white; padding: 10px 8px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; }
+th.item-col { text-align: left; min-width: 200px; }
+td { padding: 8px; border-bottom: 1px solid #e8e8e8; vertical-align: middle; }
+td.item-text { text-align: left; line-height: 1.4; }
+td.scale-cell { text-align: center; }
+tr:hover { background: #f8fbff; }
+tr:nth-child(even) { background: #fafcff; }
+tr:nth-child(even):hover { background: #f0f6ff; }
+input[type=radio] { width: 18px; height: 18px; cursor: pointer; accent-color: #1F4E79; }
+.bipolar-left { text-align: right; font-size: 0.85em; color: #444; padding-right: 8px; min-width: 110px; }
+.bipolar-right { text-align: left; font-size: 0.85em; color: #444; padding-left: 8px; min-width: 110px; }
+.ab-option { display: block; padding: 10px 14px; border: 2px solid #ddd; border-radius: 8px; margin: 6px 0; cursor: pointer; transition: all 0.2s; font-size: 0.92em; line-height: 1.4; }
+.ab-option:hover { border-color: #1F4E79; background: #EBF3FB; }
+.ab-option input { margin-right: 10px; }
+.roko-situation { background: #EBF3FB; border-left: 4px solid #1F4E79; padding: 12px 16px; border-radius: 6px; margin: 20px 0 10px; font-weight: 600; font-size: 0.95em; line-height: 1.5; }
+.roko-reactions th.item-col { min-width: 180px; }
+.section-divider { font-size: 0.9em; font-weight: 700; color: white; background: #1F4E79; padding: 8px 14px; border-radius: 6px; margin: 24px 0 12px; display: inline-block; }
+.alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 16px; font-size: 0.92em; }
+.alert-warning { background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; }
+.sticky-nav { position: sticky; bottom: 0; background: white; border-top: 2px solid #e0e0e0; padding: 14px 0; margin-top: 20px; text-align: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.06); }
+.group-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700; margin-left: 10px; }
+.badge-ent { background: #1F4E79; color: white; }
+.badge-emp { background: #375623; color: white; }
+.field-group { margin-bottom: 18px; }
+.field-label { font-weight: 600; margin-bottom: 8px; font-size: 0.95em; color: #2c3e50; }
+.radio-option { display: flex; align-items: center; padding: 8px 12px; border: 1.5px solid #ddd; border-radius: 7px; margin: 5px 0; cursor: pointer; transition: all 0.2s; }
+.radio-option:hover { border-color: #1F4E79; background: #EBF3FB; }
+.radio-option input { margin-right: 10px; flex-shrink: 0; }
+input[type=number] { padding: 9px 12px; border: 1.5px solid #ddd; border-radius: 7px; font-size: 1em; width: 120px; }
+input[type=number]:focus { outline: none; border-color: #1F4E79; }
+</style>
+{% block extra_style %}{% endblock %}
+</head>
+<body>
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div>
+      <h1>Социально-демографические сведения</h1>
+      <p class="subtitle">Шаг {{ step_num }} из {{ total_steps }}</p>
+    </div>
+    <span class="group-badge {{ 'badge-ent' if group_label == 'Предприниматель' else 'badge-emp' }}">{{ group_label }}</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" style="width:{{ progress }}%"></div></div>
+  <div class="progress-label">{{ progress }}% завершено</div>
+
+  <div class="instruction-box">
+    Пожалуйста, ответьте на все вопросы. Данные анонимны и используются только в научных целях.
+    Все поля обязательны для заполнения.
+  </div>
+</div>
+
+<form method="POST" id="mainForm">
+  <div class="card">
+    <p class="required-note">* Все поля обязательны</p>
+    {% for field in fields %}
+    <div class="field-group">
+      <div class="field-label">{{ loop.index }}. {{ field.label }} *</div>
+      {% if field.type == 'radio' %}
+        {% for opt in field.options %}
+        <label class="radio-option">
+          <input type="radio" name="{{ field.id }}" value="{{ opt }}" required>
+          {{ opt }}
+        </label>
+        {% endfor %}
+      {% elif field.type == 'number' %}
+        <input type="number" name="{{ field.id }}" min="{{ field.min }}" max="{{ field.max }}" required placeholder="Введите число">
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="sticky-nav" style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+    <a href="/pause" class="btn" style="background:#f0f0f0; color:#666; padding:10px 20px; font-size:0.9em;"
+       onclick="return confirm('Сделать паузу? Вы получите код для продолжения с этого места.')">
+      ⏸ Сделать паузу
+    </a>
+    <button type="submit" class="btn btn-primary">Далее →</button>
+  </div>
+</form>
+
+<script>
+document.getElementById('mainForm').addEventListener('submit', function(e) {
+  const radios = this.querySelectorAll('input[type=radio]');
+  const groups = {};
+  radios.forEach(r => { groups[r.name] = groups[r.name] || false; if(r.checked) groups[r.name] = true; });
+  for (const [name, checked] of Object.entries(groups)) {
+    if (!checked) { e.preventDefault(); alert('Пожалуйста, ответьте на все вопросы.'); return; }
+  }
+});
+</script>
+{% endblock %}

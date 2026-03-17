@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Панель управления</h1>
+  <p class="subtitle">Психологическое исследование Антипова Е.А.</p>
+  <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:20px;">
+    <div style="background:#EBF3FB; padding:16px 24px; border-radius:10px; text-align:center; min-width:120px;">
+      <div style="font-size:2em; font-weight:700; color:#1F4E79;">{{ stats.entrepreneur }}</div>
+      <div style="font-size:0.85em; color:#666;">Предпринимателей</div>
+    </div>
+    <div style="background:#EAF4EA; padding:16px 24px; border-radius:10px; text-align:center; min-width:120px;">
+      <div style="font-size:2em; font-weight:700; color:#375623;">{{ stats.employee }}</div>
+      <div style="font-size:0.85em; color:#666;">Наёмных работников</div>
+    </div>
+    <div style="background:#FFF8E7; padding:16px 24px; border-radius:10px; text-align:center; min-width:120px;">
+      <div style="font-size:2em; font-weight:700; color:#7d5200;">{{ stats.total }}</div>
+      <div style="font-size:0.85em; color:#666;">Всего ответов</div>
+    </div>
+    <div style="display:flex; align-items:center;">
+      <a href="/admin/export" class="btn btn-success">⬇ Скачать Excel (SPSS)</a>
+    </div>
+  </div>
+</div>
+
+{% if rows %}
+<div class="card" style="overflow-x:auto;">
+  <h2 style="margin-bottom:16px;">Все ответы</h2>
+  <table style="font-size:0.85em;">
+    <thead>
+      <tr>
+        <th style="width:40px;">ID</th>
+        <th>Группа</th>
+        <th>Дата и время</th>
+        <th style="width:80px;">Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for rid, group_type, timestamp, data_json in rows %}
+    <tr>
+      <td style="text-align:center;">{{ rid }}</td>
+      <td>
+        <span style="padding:3px 10px; border-radius:12px; font-size:0.85em; font-weight:600;
+          background:{{ '#EBF3FB' if group_type=='entrepreneur' else '#EAF4EA' }};
+          color:{{ '#1F4E79' if group_type=='entrepreneur' else '#375623' }};">
+          {{ 'Предприниматель' if group_type=='entrepreneur' else 'Наёмный работник' }}
+        </span>
+      </td>
+      <td>{{ timestamp }}</td>
+      <td>
+        <form method="POST" action="/admin/delete/{{ rid }}" style="display:inline;"
+              onsubmit="return confirm('Удалить запись #{{ rid }}?');">
+          <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card" style="text-align:center; color:#888; padding:40px;">
+  Пока нет ни одного ответа.
+</div>
+{% endif %}
+{% endblock %}

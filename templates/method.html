@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div>
+      <h1>{{ method.title }}</h1>
+      {% if method.subtitle is defined %}<p class="subtitle">{{ method.subtitle }}</p>{% endif %}
+      <p class="subtitle">Шаг {{ step_num }} из {{ total_steps }}</p>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" style="width:{{ progress }}%"></div></div>
+  <div class="progress-label">{{ progress }}% завершено</div>
+  <div class="instruction-box">{{ method.instruction }}</div>
+</div>
+
+<form method="POST" id="mainForm">
+{% if method.type == 'bipolar' %}
+  {% for section_name, items in method.sections %}
+  <div class="card" style="padding:20px;">
+    <span class="section-divider">{{ section_name }}</span>
+    <table>
+      <thead><tr>
+        <th class="item-col" style="text-align:right; background:#2c3e50;">Качество А</th>
+        <th style="width:30px; background:#2c3e50;">№</th>
+        {% for val, lbl in method.scale %}<th style="width:50px;">{{ lbl }}</th>{% endfor %}
+        <th style="width:30px; background:#2c3e50;">№</th>
+        <th class="item-col" style="text-align:left; background:#2c3e50;">Качество Б</th>
+      </tr></thead>
+      <tbody>
+      {% for num, left, right in items %}
+      <tr>
+        <td class="bipolar-left">{{ left }}</td>
+        <td style="text-align:center; color:#999; font-size:0.8em;">{{ num }}</td>
+        {% for val, lbl in method.scale %}
+        <td class="scale-cell"><input type="radio" name="pfq_{{ num }}" value="{{ val }}" required></td>
+        {% endfor %}
+        <td style="text-align:center; color:#999; font-size:0.8em;">{{ num }}</td>
+        <td class="bipolar-right">{{ right }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+
+{% elif method.type in ('yn',) %}
+  <div class="card" style="padding:20px;">
+    <table>
+      <thead><tr>
+        <th style="width:40px;">№</th>
+        <th class="item-col">Утверждение</th>
+        <th style="width:80px;">ДА</th>
+        <th style="width:80px;">НЕТ</th>
+      </tr></thead>
+      <tbody>
+      {% for num, text in method.questions %}
+      <tr>
+        <td style="text-align:center; color:#999;">{{ num }}</td>
+        <td class="item-text">{{ text }}</td>
+        <td class="scale-cell"><input type="radio" name="{{ step }}_{{ num }}" value="1" required></td>
+        <td class="scale-cell"><input type="radio" name="{{ step }}_{{ num }}" value="0"></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% elif method.type in ('scale5', 'scale4') %}
+  <div class="card" style="padding:20px;">
+    <table>
+      <thead><tr>
+        <th style="width:40px;">№</th>
+        <th class="item-col">Утверждение</th>
+        {% for val, lbl in method.scale %}<th style="width:65px;">{{ lbl }}</th>{% endfor %}
+      </tr></thead>
+      <tbody>
+      {% for num, text in method.questions %}
+      <tr>
+        <td style="text-align:center; color:#999;">{{ num }}</td>
+        <td class="item-text">{{ text }}</td>
+        {% for val, lbl in method.scale %}
+        <td class="scale-cell"><input type="radio" name="{{ step }}_{{ num }}" value="{{ val }}" required></td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% elif method.type == 'ab' %}
+  <div class="card" style="padding:20px;">
+    {% for num, text_a, text_b in method.questions %}
+    <div style="margin-bottom:18px; padding-bottom:18px; border-bottom: 1px solid #eee;">
+      <p style="font-size:0.82em; color:#999; margin-bottom:6px;">Вопрос {{ num }} из {{ method.questions|length }}</p>
+      <label class="ab-option">
+        <input type="radio" name="mats_{{ num }}" value="A" required> <strong>А.</strong> {{ text_a }}
+      </label>
+      <label class="ab-option">
+        <input type="radio" name="mats_{{ num }}" value="B"> <strong>Б.</strong> {{ text_b }}
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+
+{% elif method.type == 'roko' %}
+  {% for num, situation, reactions in method.questions %}
+  <div class="card" style="padding:20px;">
+    <div class="roko-situation">Ситуация {{ num }}: {{ situation }}</div>
+    <table class="roko-reactions">
+      <thead><tr>
+        <th style="width:35px;"></th>
+        <th class="item-col">Реакция</th>
+        {% for val, lbl in method.scale %}<th style="width:42px;">{{ lbl }}</th>{% endfor %}
+      </tr></thead>
+      <tbody>
+      {% for label, text in reactions %}
+      <tr>
+        <td style="text-align:center; font-weight:700; color:#1F4E79;">{{ label }}</td>
+        <td class="item-text">{{ text }}</td>
+        {% for val, lbl in method.scale %}
+        <td class="scale-cell">
+          <input type="radio" name="roko_{{ num }}_{{ label|lower }}" value="{{ val }}" required>
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+{% endif %}
+
+  <div class="sticky-nav" style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+    <a href="/pause" class="btn" style="background:#f0f0f0; color:#666; padding:10px 20px; font-size:0.9em;"
+       onclick="return confirm('Сделать паузу? Вы получите код для продолжения с этого места.')">
+      ⏸ Сделать паузу
+    </a>
+    <button type="submit" class="btn btn-primary">Далее →</button>
+  </div>
+</form>
+
+<script>
+document.getElementById('mainForm').addEventListener('submit', function(e) {
+  const radios = this.querySelectorAll('input[type=radio]');
+  const groups = {};
+  radios.forEach(r => { groups[r.name] = groups[r.name] || false; if(r.checked) groups[r.name] = true; });
+  for (const [name, checked] of Object.entries(groups)) {
+    if (!checked) { e.preventDefault(); alert('Пожалуйста, ответьте на все вопросы перед тем, как продолжить.'); window.scrollTo(0,0); return; }
+  }
+});
+</script>
+{% endblock %}

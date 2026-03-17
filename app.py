@@ -839,7 +839,7 @@ METHODS = {
 
 # Социально-демографический блок
 SOCDEM_ENTREPRENEUR = [
-    {'id':'sd_name','label':'Ваше имя и фамилия','type':'text','hint':'в диссертации не будут указаны, требуются только на этапе обработки данных'},
+    {'id':'sd_name','label':'Ваше имя и фамилия','type':'text'},
     {'id':'sd_email','label':'Ваш email','type':'email','hint':'На этот адрес будет отправлена расшифровка ваших результатов'},
     {'id':'sd_gender','label':'Ваш пол','type':'radio','options':['Мужской','Женский']},
     {'id':'sd_age','label':'Ваш возраст (полных лет)','type':'number','min':18,'max':80},
@@ -873,7 +873,7 @@ SOCDEM_ENTREPRENEUR = [
 ]
 
 SOCDEM_EMPLOYEE = [
-    {'id':'sd_name','label':'Ваше имя и фамилия','type':'text','hint':'в диссертации не будут указаны, требуются только на этапе обработки данных'},
+    {'id':'sd_name','label':'Ваше имя и фамилия','type':'text'},
     {'id':'sd_email','label':'Ваш email','type':'email','hint':'На этот адрес будет отправлена расшифровка ваших результатов'},
     {'id':'sd_gender','label':'Ваш пол','type':'radio','options':['Мужской','Женский']},
     {'id':'sd_age','label':'Ваш возраст (полных лет)','type':'number','min':18,'max':80},

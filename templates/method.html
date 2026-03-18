@@ -191,7 +191,7 @@
 </form>
 
 <script>
-// Переключение мобильной/десктопной версии через JS (надёжнее CSS медиазапросов в iOS Safari)
+// Переключение мобильной/десктопной версии
 (function() {
   function switchLayout() {
     var isMobile = window.innerWidth <= 640;
@@ -205,6 +205,20 @@
   switchLayout();
   window.addEventListener('resize', switchLayout);
 })();
+
+// Подсветка выбранных кнопок (вместо :has() для совместимости с iOS Safari)
+document.addEventListener('change', function(e) {
+  if (e.target.type !== 'radio') return;
+  var name = e.target.name;
+  // Снимаем selected со всех кнопок этой группы
+  document.querySelectorAll('[name="' + name + '"]').forEach(function(radio) {
+    var btn = radio.closest('.scale-btn, .opt-btn, .yn-btn');
+    if (btn) btn.classList.remove('selected');
+  });
+  // Добавляем selected к нажатой
+  var btn = e.target.closest('.scale-btn, .opt-btn, .yn-btn');
+  if (btn) btn.classList.add('selected');
+});
 </script>
 
 <script>

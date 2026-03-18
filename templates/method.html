@@ -45,14 +45,17 @@
     <div class="bipolar-mobile">
       {% for num, left, right in items %}
       <div class="bipolar-card">
-        <div style="font-size:0.75em; color:#999; margin-bottom:6px;">{{ num }}</div>
-        <div class="labels"><span>{{ left }}</span><span>{{ right }}</span></div>
-        <div class="radio-row">
+        <div class="num">{{ num }}</div>
+        <div class="qualities">
+          <span class="q-left">{{ left }}</span>
+          <span class="q-right">{{ right }}</span>
+        </div>
+        <div class="scale-row">
           {% for val, lbl in method.scale %}
-          <div class="radio-item">
+          <label class="scale-btn">
             <input type="radio" name="pfq_{{ num }}" value="{{ val }}" required>
             <span>{{ lbl }}</span>
-          </div>
+          </label>
           {% endfor %}
         </div>
       </div>
@@ -86,16 +89,16 @@
     <div class="scale-mobile">
       {% for num, text in method.questions %}
       <div class="scale-card">
-        <div class="q-text"><span style="color:#999; font-size:0.85em;">{{ num }}. </span>{{ text }}</div>
-        <div class="radio-row" style="justify-content:center; gap:40px;">
-          <div class="radio-item">
+        <div class="q-text"><span style="color:#aaa; font-size:0.8em;">{{ num }}. </span>{{ text }}</div>
+        <div class="yn-row">
+          <label class="yn-btn yes-btn">
             <input type="radio" name="{{ step }}_{{ num }}" value="1" required>
-            <span style="font-weight:600; color:#27ae60;">ДА</span>
-          </div>
-          <div class="radio-item">
+            ✓ ДА
+          </label>
+          <label class="yn-btn no-btn">
             <input type="radio" name="{{ step }}_{{ num }}" value="0">
-            <span style="font-weight:600; color:#e74c3c;">НЕТ</span>
-          </div>
+            ✗ НЕТ
+          </label>
         </div>
       </div>
       {% endfor %}
@@ -127,13 +130,13 @@
     <div class="scale-mobile">
       {% for num, text in method.questions %}
       <div class="scale-card">
-        <div class="q-text"><span style="color:#999; font-size:0.85em;">{{ num }}. </span>{{ text }}</div>
-        <div class="radio-row">
+        <div class="q-text"><span style="color:#aaa; font-size:0.8em;">{{ num }}. </span>{{ text }}</div>
+        <div class="btn-row">
           {% for val, lbl in method.scale %}
-          <div class="radio-item">
+          <label class="opt-btn">
             <input type="radio" name="{{ step }}_{{ num }}" value="{{ val }}" required>
-            <span>{{ lbl }}</span>
-          </div>
+            {{ lbl }}
+          </label>
           {% endfor %}
         </div>
       </div>

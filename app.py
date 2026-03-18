@@ -1009,9 +1009,13 @@ def survey_step(step):
 
     if request.method == 'POST':
         form_data = request.form.to_dict(flat=False)
-        # Сохраняем ответы
+        # Сохраняем ответы с нормализацией ключей (otec1_5 -> otec_5)
+        import re as _re
         for k, v in form_data.items():
-            answers[k] = v[0] if len(v) == 1 else v
+            val = v[0] if len(v) == 1 else v
+            m = _re.match('^([a-z]+)[0-9]+_([0-9]+)$', k)
+            norm_k = (m.group(1) + '_' + m.group(2)) if m else k
+            answers[norm_k] = val
         sdata['answers'] = answers
         # Обновляем текущий шаг
         idx = SURVEY_STEPS.index(step)
@@ -1176,6 +1180,17 @@ def safe_int(val, default=0):
 
 def compute_scales(data, group_type):
     """Подсчитывает шкальные баллы из сырых ответов"""
+    # Нормализуем ключи: otec1_5 -> otec_5, izhs2_33 -> izhs_33 и т.д.
+    import re
+    normalized = {}
+    for k, v in data.items():
+        # Паттерн: методика + цифра + _ + номер (например otec1_5, izhs3_44, usk2_22)
+        m = re.match('^([a-z]+)[0-9]+_([0-9]+)$', k)
+        if m:
+            normalized[m.group(1) + '_' + m.group(2)] = v
+        else:
+            normalized[k] = v
+    data = normalized
     s = {}
 
     # Группа: 1=предприниматель, 2=наёмный

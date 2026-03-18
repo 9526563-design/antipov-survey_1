@@ -193,6 +193,23 @@
 </form>
 
 <script>
+// Переключение мобильной/десктопной версии через JS (надёжнее CSS медиазапросов в iOS Safari)
+(function() {
+  function switchLayout() {
+    var isMobile = window.innerWidth <= 640;
+    document.querySelectorAll('.bipolar-table, .scale-table').forEach(function(el) {
+      el.style.display = isMobile ? 'none' : '';
+    });
+    document.querySelectorAll('.bipolar-mobile, .scale-mobile').forEach(function(el) {
+      el.style.display = isMobile ? 'block' : 'none';
+    });
+  }
+  switchLayout();
+  window.addEventListener('resize', switchLayout);
+})();
+</script>
+
+<script>
 document.getElementById('mainForm').addEventListener('submit', function(e) {
   const radios = this.querySelectorAll('input[type=radio]');
   const groups = {};

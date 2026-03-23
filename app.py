@@ -1310,7 +1310,7 @@ def admin_delete(rid):
 # ============================================================
 
 def safe_int(val, default=0):
-    try: return int(val)
+    try: return int(float(val))
     except: return default
 
 def compute_scales(data, group_type):

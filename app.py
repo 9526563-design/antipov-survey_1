@@ -1401,19 +1401,23 @@ def compute_scales(data, group_type):
 
     # ── MSTAT-I ───────────────────────────────────────────
     # Ключ: Луковицкая Е.Г., 1998. Шкала 1-7.
-    # Прямые (высокий балл = высокая ТН): 4,7,11,12,14,15,17,18,19,21,22
-    # Обратные (высокий балл = низкая ТН): 1,2,3,5,6,8,9,10,13,16,20
-    # Итог = сумма прямых − сумма обратных. Диапазон: −66 до +66
+    # Прямые пункты (высокий балл = высокая ТН): 4,7,11,12,14,15,17,18,19,21,22
+    # Обратные пункты (инвертируются: 8-val): 1,2,3,5,6,8,9,10,13,16,20
+    # Итог = сумма всех 22 пунктов (обратные инвертированы). Диапазон: 22–154
+    # Нормы Луковицкой (n=130): M=95, SD=19.1
     mstat_direct  = {4,7,11,12,14,15,17,18,19,21,22}
     mstat_reverse = {1,2,3,5,6,8,9,10,13,16,20}
-    mstat_sum = 0
-    for i in range(1,23):
-        val = safe_int(data.get(f'mstat_{i}', 4))
-        if i in mstat_direct:
+    mstat_answered = sum(1 for i in range(1,23) if data.get(f'mstat_{i}') is not None and data.get(f'mstat_{i}') != '')
+    if mstat_answered == 0:
+        s['mstat_total'] = None
+    else:
+        mstat_sum = 0
+        for i in range(1,23):
+            val = safe_int(data.get(f'mstat_{i}', 4))
+            if i in mstat_reverse:
+                val = 8 - val   # инверсия: 1→7, 7→1
             mstat_sum += val
-        elif i in mstat_reverse:
-            mstat_sum -= val
-    s['mstat_total'] = mstat_sum
+        s['mstat_total'] = mstat_sum
 
     # ── ЛФР-25 ────────────────────────────────────────────
     # Ключ по Корниловой Т.В. (1994). Оригинальная шкала: −1 / 0 / +1.
@@ -1453,14 +1457,18 @@ def compute_scales(data, group_type):
     # Обратные пункты (1 при +3 = избегание неудачи): 2,4,6,9,11,12,15,16,18,20,22,23,25,26,27,29,30,32
     mats_direct  = {1,3,5,7,8,10,13,14,17,19,21,24,28,31}
     mats_reverse = {2,4,6,9,11,12,15,16,18,20,22,23,25,26,27,29,30,32}
-    mats_total = 0
-    for i in range(1, 33):
-        raw = safe_int(data.get(f'mats_{i}', 0))   # -3..+3
-        coded = raw + 4   # перевод: -3→1 … +3→7
-        if i in mats_reverse:
-            coded = 8 - coded   # инверсия: 1→7, 7→1
-        mats_total += coded
-    s['mats_total'] = mats_total   # диапазон 32–224; >165=успех, <76=избегание
+    mats_answered = sum(1 for i in range(1,33) if data.get(f'mats_{i}') is not None and data.get(f'mats_{i}') != '')
+    if mats_answered == 0:
+        s['mats_total'] = None
+    else:
+        mats_total = 0
+        for i in range(1, 33):
+            raw = safe_int(data.get(f'mats_{i}', 0))   # -3..+3
+            coded = raw + 4   # перевод: -3→1 … +3→7
+            if i in mats_reverse:
+                coded = 8 - coded   # инверсия: 1→7, 7→1
+            mats_total += coded
+        s['mats_total'] = mats_total   # диапазон 32–224; >165=успех, <76=избегание
 
     # ── ЭмИн ──────────────────────────────────────────────
     # Ключ: Люсин Д.В. Опросник ЭмИн: новые психометрические данные, 2009

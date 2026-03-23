@@ -66,7 +66,7 @@ def interpret_results(scales):
         val = scales.get(key, 0)
         pct = int(max(0, min(100, (val - mn) / (mx - mn) * 100)))
         lvl = level(val, lo, hi)
-        pfq_block['scales'].append({'name': name, 'val': val, 'pct': pct, 'level': lbl(lvl), 'color': color(lvl), 'desc': descs[lvl]})
+        pfq_block['scales'].append({'name': name, 'val': f'{pct}%', 'pct': pct, 'level': lbl(lvl), 'color': color(lvl), 'desc': descs[lvl]})
         strong.append(recs[lvl])
     pfq_block['recommendations'] = strong[:3]
     results.append(pfq_block)
@@ -77,7 +77,7 @@ def interpret_results(scales):
     usk_lvl = level(usk_val, 14, 28)
     results.append({
         'title': 'УСК — Локус контроля', 'icon': '🎯',
-        'scales': [{'name': 'Субъективный контроль', 'val': usk_val, 'pct': usk_pct, 'level': lbl(usk_lvl), 'color': color(usk_lvl),
+        'scales': [{'name': 'Субъективный контроль', 'val': f'{usk_pct}%', 'pct': usk_pct, 'level': lbl(usk_lvl), 'color': color(usk_lvl),
             'desc': {
                 'low': 'Преобладает внешний локус контроля: происходящее объясняется обстоятельствами, везением или действиями других людей. Собственная роль в результатах недооценивается.',
                 'mid': 'Смешанный локус контроля: в одних ситуациях берётся ответственность на себя, в других — причины ищутся во внешних факторах. Баланс зависит от значимости и сложности ситуации.',
@@ -149,7 +149,7 @@ def interpret_results(scales):
         pct = int(max(0, min(100, (val / max_val) * 100)))
         lvl = 'high' if pct >= 65 else ('low' if pct <= 35 else 'mid')
         desc = otec_descs.get(key, {}).get(lvl, '')
-        otec_scales.append({'name': name, 'val': val, 'pct': pct, 'level': lbl(lvl), 'color': color(lvl), 'desc': desc})
+        otec_scales.append({'name': name, 'val': f'{pct}%', 'pct': pct, 'level': lbl(lvl), 'color': color(lvl), 'desc': desc})
         otec_vals.append((val, name, key, lvl))
     top3 = sorted(otec_vals, reverse=True)[:3]
     otec_recs = [otec_recs_map.get(key, '') for _, _, key, _ in top3]
@@ -173,7 +173,7 @@ def interpret_results(scales):
         mstat_lvl = level(mstat_val, 76, 114)
         results.append({
             'title': 'MSTAT-I — Толерантность к неопределённости', 'icon': '🌫️',
-            'scales': [{'name': 'Толерантность к неопределённости', 'val': mstat_val, 'pct': mstat_pct, 'level': lbl(mstat_lvl), 'color': color(mstat_lvl),
+            'scales': [{'name': 'Толерантность к неопределённости', 'val': f'{mstat_pct}%', 'pct': mstat_pct, 'level': lbl(mstat_lvl), 'color': color(mstat_lvl),
                 'desc': {
                     'low': 'Неопределённость воспринимается как угроза: ситуации без чёткого исхода вызывают тревогу и желание как можно быстрее получить ясность. Предпочтительны структурированные, предсказуемые условия.',
                     'mid': 'Неопределённость переносится удовлетворительно, хотя выраженная нестабильность может вызывать напряжение. При наличии хотя бы частичной ясности — работоспособность сохраняется.',
@@ -208,12 +208,12 @@ def interpret_results(scales):
     results.append({
         'title': 'ЛФР-25 — Рациональность и готовность к риску', 'icon': '⚖️',
         'scales': [
-            {'name': 'Рациональность', 'val': lfr_r, 'pct': lfr_r_pct, 'level': lbl(lfr_r_lvl), 'color': color(lfr_r_lvl),
+            {'name': 'Рациональность', 'val': f'{lfr_r_pct}%', 'pct': lfr_r_pct, 'level': lbl(lfr_r_lvl), 'color': color(lfr_r_lvl),
              'desc': {
                  'low': 'Решения принимаются быстро, опираясь на интуицию и первое впечатление. Детальный анализ перед действием — не типичная стратегия.',
                  'mid': 'Достаточный уровень обдуманности: анализирует варианты, но не застревает в бесконечном взвешивании.',
                  'high': 'Системный, аналитический подход к принятию решений: собирает информацию, взвешивает последствия, планирует наперёд.'}[lfr_r_lvl]},
-            {'name': 'Готовность к риску', 'val': lfr_risk, 'pct': lfr_risk_pct, 'level': lbl(lfr_risk_lvl), 'color': color(lfr_risk_lvl),
+            {'name': 'Готовность к риску', 'val': f'{lfr_risk_pct}%', 'pct': lfr_risk_pct, 'level': lbl(lfr_risk_lvl), 'color': color(lfr_risk_lvl),
              'desc': {
                  'low': 'Предпочтение надёжным, предсказуемым вариантам. Риск воспринимается как угроза, а не как возможность.',
                  'mid': 'Готов(а) к умеренному риску при наличии достаточных оснований. Неоправданный риск избегается.',
@@ -236,7 +236,7 @@ def interpret_results(scales):
         mats_lvl = level(mats_total, 76, 165)
         results.append({
             'title': 'MATS — Мотивация достижения', 'icon': '🏆',
-            'scales': [{'name': 'Мотивация достижения', 'val': mats_total, 'pct': mats_pct, 'level': lbl(mats_lvl), 'color': color(mats_lvl),
+            'scales': [{'name': 'Мотивация достижения', 'val': f'{mats_pct}%', 'pct': mats_pct, 'level': lbl(mats_lvl), 'color': color(mats_lvl),
                 'desc': {
                     'low': 'Преобладает мотивация избегания неудачи: при выборе задач предпочтение отдаётся тем, где провал маловероятен. Неуспех переживается болезненно и надолго снижает активность.',
                     'mid': 'Оба мотива присутствуют примерно в равной мере. Выбор стратегии — достигать или избегать — зависит от значимости ситуации и текущего уровня уверенности.',
@@ -273,13 +273,13 @@ def interpret_results(scales):
     results.append({
         'title': 'ЭмИн — Эмоциональный интеллект', 'icon': '💡',
         'scales': [
-            {'name': 'Общий ЭИ', 'val': emin_total, 'pct': emin_pct, 'level': lbl(emin_lvl), 'color': color(emin_lvl),
+            {'name': 'Общий ЭИ', 'val': f'{emin_pct}%', 'pct': emin_pct, 'level': lbl(emin_lvl), 'color': color(emin_lvl),
              'desc': {
                  'low': 'Распознавание и регуляция эмоций — как своих, так и чужих — требует усилий. Эмоциональный контекст ситуаций считывается не всегда точно.',
                  'mid': 'Достаточный уровень эмоциональной осознанности: понимает собственные состояния и улавливает настроение окружающих, хотя в напряжённых ситуациях могут возникать затруднения.',
                  'high': 'Тонкое понимание эмоционального контекста — своего и чужого. Умеет управлять собственными состояниями и влиять на эмоциональный климат взаимодействия.'}[emin_lvl]},
-            {'name': 'Межличностный ЭИ', 'val': mei, 'pct': int(max(0,min(100,(mei/66)*100))), 'level': '', 'color': '#2e86de', 'desc': 'Понимание и управление эмоциями других людей.'},
-            {'name': 'Внутриличностный ЭИ', 'val': vei, 'pct': int(max(0,min(100,(vei/72)*100))), 'level': '', 'color': '#2e86de', 'desc': 'Понимание и управление собственными эмоциями.'},
+            {'name': 'Межличностный ЭИ', 'val': f'{int(max(0,min(100,(mei/66)*100)))}%', 'pct': int(max(0,min(100,(mei/66)*100))), 'level': '', 'color': '#2e86de', 'desc': 'Понимание и управление эмоциями других людей.'},
+            {'name': 'Внутриличностный ЭИ', 'val': f'{int(max(0,min(100,(vei/72)*100)))}%', 'pct': int(max(0,min(100,(vei/72)*100))), 'level': '', 'color': '#2e86de', 'desc': 'Понимание и управление собственными эмоциями.'},
         ],
         'recommendations': emin_recs
     })
@@ -290,7 +290,7 @@ def interpret_results(scales):
     gses_lvl = level(gses, 20, 30)
     results.append({
         'title': 'Самоэффективность', 'icon': '💪',
-        'scales': [{'name': 'Общая самоэффективность', 'val': gses, 'pct': gses_pct, 'level': lbl(gses_lvl), 'color': color(gses_lvl),
+        'scales': [{'name': 'Общая самоэффективность', 'val': f'{gses_pct}%', 'pct': gses_pct, 'level': lbl(gses_lvl), 'color': color(gses_lvl),
             'desc': {
                 'low': 'Низкая уверенность в собственной способности справляться с трудными задачами. В сложных ситуациях первой возникает мысль «я не справлюсь», что нередко становится самосбывающимся прогнозом.',
                 'mid': 'Умеренная самоэффективность: в знакомых ситуациях действует уверенно, в принципиально новых или высокорисковых — уверенность снижается.',
@@ -392,7 +392,7 @@ def interpret_results(scales):
         pct = int(max(0, min(100, (val / max_score) * 100)))
         lvl = 'high' if pct >= 60 else ('low' if pct <= 25 else 'mid')
         desc = izhs_descs[key][lvl]
-        izhs_scales_out.append({'name': name, 'val': val, 'pct': pct, 'level': lbl(lvl), 'color': color(lvl), 'desc': desc})
+        izhs_scales_out.append({'name': name, 'val': f'{pct}%', 'pct': pct, 'level': lbl(lvl), 'color': color(lvl), 'desc': desc})
         if pct > max_pct:
             max_pct = pct
             dominant_izhs = (key, name, lvl)
@@ -441,11 +441,11 @@ def interpret_results(scales):
         'title': 'РОКО — Каузальные ориентации', 'icon': '🧭',
         'subtitle': f'Доминирующая ориентация: {"Автономная" if dominant=="roko_a" else "Подконтрольная" if dominant=="roko_p" else "Безличная"}',
         'scales': [
-            {'name': 'Автономная', 'val': round(roko_a,1), 'pct': roko_pct(roko_a), 'level': '', 'color': '#27ae60',
+            {'name': 'Автономная', 'val': f'{roko_pct(roko_a)}%', 'pct': roko_pct(roko_a), 'level': '', 'color': '#27ae60',
              'desc': 'Действия исходят из собственных ценностей, интересов и смыслов. Высокая внутренняя мотивация.'},
-            {'name': 'Подконтрольная', 'val': round(roko_p,1), 'pct': roko_pct(roko_p), 'level': '', 'color': '#f39c12',
+            {'name': 'Подконтрольная', 'val': f'{roko_pct(roko_p)}%', 'pct': roko_pct(roko_p), 'level': '', 'color': '#f39c12',
              'desc': 'Действия определяются внешними требованиями, ожиданиями других и давлением обстоятельств.'},
-            {'name': 'Безличная', 'val': round(roko_b,1), 'pct': roko_pct(roko_b), 'level': '', 'color': '#e74c3c',
+            {'name': 'Безличная', 'val': f'{roko_pct(roko_b)}%', 'pct': roko_pct(roko_b), 'level': '', 'color': '#e74c3c',
              'desc': 'Ситуации воспринимаются как неподконтрольные. Трудно установить связь между собственными действиями и результатом.'},
         ],
         'recommendations': [roko_recs[dominant]]
